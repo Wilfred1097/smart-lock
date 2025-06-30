@@ -5,7 +5,7 @@ from kivy.animation import Animation
 from kivy.graphics import Color, Rectangle
 
 from kivymd.app import MDApp
-from kivymd.uix.button import MDRaisedButton, MDIconButton, MDFlatButton
+from kivymd.uix.button import MDFlatButton, MDIconButton
 from kivymd.uix.floatlayout import MDFloatLayout
 from kivymd.uix.dialog import MDDialog
 from kivymd.uix.textfield import MDTextField
@@ -18,8 +18,8 @@ class Sidebar(BoxLayout):
         self.size_hint = (None, 1)
         self.width = 200
         self.x = -200
-        self.padding = [20, 20, 20, 20]
-        self.spacing = 5
+        self.padding = [10, 10, 10, 10]
+        self.spacing = 1
 
         with self.canvas.before:
             Color(0.92, 0.92, 0.95, 1)
@@ -113,13 +113,13 @@ class CenteredSquareButtonPage(MDFloatLayout):
         self.settings_btn.bind(on_press=self.toggle_sidebar)
         self.add_widget(self.settings_btn)
 
-        self.button = MDRaisedButton(
+        self.button = MDFlatButton(
             text="Send OTP",
             size_hint=(None, None),
             size=(200, 60),
             pos_hint={'center_x': 0.5, 'center_y': 0.5},
-            md_bg_color=(0.035, 0.247, 0.706, 1),
-            text_color=(1, 1, 1, 1),
+            md_bg_color=(0.92, 0.92, 0.95, 1),
+            text_color=(1, 1, 1, 1),  # <-- White text
             font_size='16sp',
         )
         self.button.bind(on_release=self.show_otp_sent_dialog)
@@ -161,7 +161,7 @@ class CenteredSquareButtonPage(MDFloatLayout):
                 text="OTP sent Successfully",
                 size_hint=(0.8, None),
                 buttons=[
-                    MDRaisedButton(
+                    MDFlatButton(
                         text="OK",
                         on_release=self.close_dialog
                     ),
@@ -208,11 +208,11 @@ class CenteredSquareButtonPage(MDFloatLayout):
                 content_cls=box,
                 size_hint=(0.8, None),  # Ensure dialog width is consistent
                 buttons=[
-                    MDRaisedButton(
+                    MDFlatButton(
                         text="Save",
                         on_release=self.save_smtp_config
                     ),
-                    MDRaisedButton(
+                    MDFlatButton(
                         text="Cancel",
                         on_release=self.close_smtp_dialog
                     ),
@@ -255,11 +255,11 @@ class CenteredSquareButtonPage(MDFloatLayout):
                 content_cls=box,
                 size_hint=(0.8, None),  # Same width as others
                 buttons=[
-                    MDRaisedButton(
+                    MDFlatButton(
                         text="Save",
                         on_release=self.save_emails_config
                     ),
-                    MDRaisedButton(
+                    MDFlatButton(
                         text="Cancel",
                         on_release=self.close_emails_dialog
                     ),
@@ -321,11 +321,11 @@ class CenteredSquareButtonPage(MDFloatLayout):
                 content_cls=box,
                 size_hint=(0.8, None),  # Same width as other dialogs
                 buttons=[
-                    MDRaisedButton(
+                    MDFlatButton(
                         text="Save",
                         on_release=self.save_db_config
                     ),
-                    MDRaisedButton(
+                    MDFlatButton(
                         text="Cancel",
                         on_release=self.close_db_dialog
                     ),
