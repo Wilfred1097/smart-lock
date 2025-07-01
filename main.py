@@ -5,11 +5,17 @@ from kivy.animation import Animation
 from kivy.graphics import Color, Rectangle
 
 from kivymd.app import MDApp
-from kivymd.uix.button import MDFlatButton, MDIconButton
-from kivymd.uix.floatlayout import MDFloatLayout
-from kivymd.uix.dialog import MDDialog
+from kivymd.uix.button import MDButton, MDButtonText, MDIconButton, MDFabButton
+from kivymd.uix.dialog import (
+    MDDialog,
+    MDDialogHeadlineText,
+    MDDialogSupportingText,
+    MDDialogButtonContainer,
+    MDDialogContentContainer,
+)
 from kivymd.uix.textfield import MDTextField
 from kivymd.uix.boxlayout import MDBoxLayout
+from kivymd.uix.floatlayout import MDFloatLayout
 
 class Sidebar(BoxLayout):
     def __init__(self, smtp_callback, emails_callback, db_callback, **kwargs):
@@ -26,37 +32,35 @@ class Sidebar(BoxLayout):
             self.bg_rect = Rectangle(pos=self.pos, size=self.size)
         self.bind(pos=self._update_bg, size=self._update_bg)
 
-        smtp_btn = MDFlatButton(
-            text="Configure SMTP",
-            size_hint_y=None,
-            height=40,
-            md_bg_color=(0.92, 0.92, 0.95, 1),      # White background
-            text_color=(0, 0, 0, 1),       # Black text
-            on_release=smtp_callback
+        self.add_widget(
+            MDButton(
+                MDButtonText(text="Configure SMTP"),
+                style="text",
+                size_hint_y=None,
+                height=40,
+                on_release=smtp_callback,
+            )
         )
-        self.add_widget(smtp_btn)
-
-        emails_btn = MDFlatButton(
-            text="Configure Emails",
-            size_hint_y=None,
-            height=40,
-            md_bg_color=(0.92, 0.92, 0.95, 1),
-            text_color=(0, 0, 0, 1),
-            on_release=emails_callback,
+        self.add_widget(
+            MDButton(
+                MDButtonText(text="Configure Emails"),
+                style="text",
+                size_hint_y=None,
+                height=40,
+                on_release=emails_callback,
+            )
         )
-        self.add_widget(emails_btn)
-
-        db_btn = MDFlatButton(
-            text="Configure Database",
-            size_hint_y=None,
-            height=40,
-            md_bg_color=(0.92, 0.92, 0.95, 1),
-            text_color=(0, 0, 0, 1),
-            on_release=db_callback,
+        self.add_widget(
+            MDButton(
+                MDButtonText(text="Configure Database"),
+                style="text",
+                size_hint_y=None,
+                height=40,
+                on_release=db_callback,
+            )
         )
-        self.add_widget(db_btn)
 
-        self.add_widget(Widget(size_hint_y=1))  # Only one spacer at the end!
+        self.add_widget(Widget(size_hint_y=1))
 
     def _update_bg(self, *args):
         self.bg_rect.pos = self.pos
@@ -98,31 +102,27 @@ class CenteredSquareButtonPage(MDFloatLayout):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         Window.clearcolor = (1, 1, 1, 1)
-        self.dialog = None  # For OTP dialog
+        self.dialog = None
         self.smtp_dialog = None
         self.emails_dialog = None
         self.db_dialog = None
 
         self.settings_btn = MDIconButton(
             icon="cog",
-            theme_text_color="Custom",
-            text_color=(0.035, 0.247, 0.706, 1),
+            icon_color=(0.035, 0.247, 0.706, 1),
             pos_hint={'x': 0, 'top': 1},
-            icon_size="32sp"
         )
         self.settings_btn.bind(on_press=self.toggle_sidebar)
         self.add_widget(self.settings_btn)
 
-        self.button = MDFlatButton(
-            text="Send OTP",
-            size_hint=(None, None),
-            size=(200, 60),
+        self.button = MDFabButton(
+            icon="send",
+            md_bg_color=(0.035, 0.247, 0.706, 1),
+            icon_color=(1, 1, 1, 1),
+            style="large",
             pos_hint={'center_x': 0.5, 'center_y': 0.5},
-            md_bg_color=(0.92, 0.92, 0.95, 1),
-            text_color=(1, 1, 1, 1),  # <-- White text
-            font_size='16sp',
+            on_release=self.show_otp_sent_dialog,
         )
-        self.button.bind(on_release=self.show_otp_sent_dialog)
         self.add_widget(self.button)
 
         self.sidebar = Sidebar(
@@ -157,15 +157,15 @@ class CenteredSquareButtonPage(MDFloatLayout):
     def show_otp_sent_dialog(self, *args):
         if not self.dialog:
             self.dialog = MDDialog(
-                title="Success",
-                text="OTP sent Successfully",
-                size_hint=(0.8, None),
-                buttons=[
-                    MDFlatButton(
-                        text="OK",
-                        on_release=self.close_dialog
+                MDDialogHeadlineText(text="Success"),
+                MDDialogSupportingText(text="OTP sent Successfully"),
+                MDDialogButtonContainer(
+                    MDButton(
+                        MDButtonText(text="OK"),
+                        style="text",
+                        on_release=self.close_dialog,
                     ),
-                ],
+                ),
             )
         self.dialog.open()
 
@@ -177,7 +177,7 @@ class CenteredSquareButtonPage(MDFloatLayout):
         if not self.smtp_dialog:
             self.email_field = MDTextField(
                 hint_text="Email",
-                mode="rectangle",
+                mode="outlined",
                 size_hint_y=None,
                 height=48,
                 size_hint_x=1
@@ -185,38 +185,37 @@ class CenteredSquareButtonPage(MDFloatLayout):
             self.password_field = MDTextField(
                 hint_text="Password",
                 password=True,
-                mode="rectangle",
+                mode="outlined",
                 size_hint_y=None,
                 height=48,
                 size_hint_x=1
             )
 
-            box = MDBoxLayout(
+            content_box = MDBoxLayout(
                 orientation='vertical',
                 spacing=10,
                 size_hint_y=None,
-                width=200,
-                size_hint_x=None,
                 height=48*2 + 10,
             )
-            box.add_widget(self.email_field)
-            box.add_widget(self.password_field)
+            content_box.add_widget(self.email_field)
+            content_box.add_widget(self.password_field)
 
             self.smtp_dialog = MDDialog(
-                title="Configure SMTP",
-                type="custom",
-                content_cls=box,
-                size_hint=(0.8, None),  # Ensure dialog width is consistent
-                buttons=[
-                    MDFlatButton(
-                        text="Save",
-                        on_release=self.save_smtp_config
+                MDDialogHeadlineText(text="Configure SMTP"),
+                MDDialogSupportingText(text="Enter your SMTP email and password."),
+                MDDialogContentContainer(content_box),
+                MDDialogButtonContainer(
+                    MDButton(
+                        MDButtonText(text="Save"),
+                        style="text",
+                        on_release=self.save_smtp_config,
                     ),
-                    MDFlatButton(
-                        text="Cancel",
-                        on_release=self.close_smtp_dialog
+                    MDButton(
+                        MDButtonText(text="Cancel"),
+                        style="text",
+                        on_release=self.close_smtp_dialog,
                     ),
-                ],
+                ),
             )
         self.smtp_dialog.open()
 
@@ -233,38 +232,38 @@ class CenteredSquareButtonPage(MDFloatLayout):
         if not self.emails_dialog:
             self.email_input = MDTextField(
                 hint_text="Email",
-                mode="rectangle",
+                mode="outlined",
                 size_hint_y=None,
                 height=48,
                 size_hint_x=1
             )
 
-            box = MDBoxLayout(
+            content_box = MDBoxLayout(
                 orientation='vertical',
                 spacing=10,
                 size_hint_y=None,
-                width=200,
-                size_hint_x=None,
                 height=48,
             )
-            box.add_widget(self.email_input)
+            content_box.add_widget(self.email_input)
 
             self.emails_dialog = MDDialog(
-                title="Configure Emails",
-                type="custom",
-                content_cls=box,
-                size_hint=(0.8, None),  # Same width as others
-                buttons=[
-                    MDFlatButton(
-                        text="Save",
-                        on_release=self.save_emails_config
+                MDDialogHeadlineText(text="Configure Emails"),
+                MDDialogSupportingText(text="Enter the email address."),
+                MDDialogContentContainer(content_box),  # <-- wrap your box here!
+                MDDialogButtonContainer(
+                    MDButton(
+                        MDButtonText(text="Save"),
+                        style="text",
+                        on_release=self.save_emails_config,
                     ),
-                    MDFlatButton(
-                        text="Cancel",
-                        on_release=self.close_emails_dialog
+                    MDButton(
+                        MDButtonText(text="Cancel"),
+                        style="text",
+                        on_release=self.close_emails_dialog,
                     ),
-                ],
+                ),
             )
+
         self.emails_dialog.open()
 
     def save_emails_config(self, *args):
@@ -279,14 +278,14 @@ class CenteredSquareButtonPage(MDFloatLayout):
         if not self.db_dialog:
             self.db_name_field = MDTextField(
                 hint_text="Database Name",
-                mode="rectangle",
+                mode="outlined",
                 size_hint_y=None,
                 height=48,
                 size_hint_x=1
             )
             self.db_user_field = MDTextField(
                 hint_text="Username",
-                mode="rectangle",
+                mode="outlined",
                 size_hint_y=None,
                 height=48,
                 size_hint_x=1
@@ -294,43 +293,42 @@ class CenteredSquareButtonPage(MDFloatLayout):
             self.db_pass_field = MDTextField(
                 hint_text="Password",
                 password=True,
-                mode="rectangle",
+                mode="outlined",
                 size_hint_y=None,
                 height=48,
                 size_hint_x=1
             )
 
-            box = MDBoxLayout(
+            content_box = MDBoxLayout(
                 orientation='vertical',
                 spacing=10,
                 size_hint_y=None,
-                width=200,
-                size_hint_x=None,
-                height=10 + 48*3 + 10*2,  # 10 for spacer, 3 fields, 2 spacings
+                height=10 + 48*3 + 10*2,
             )
-            # Add a spacer at the top for space between title and first input
             spacer = Widget(size_hint_y=None, height=10)
-            box.add_widget(spacer)
-            box.add_widget(self.db_name_field)
-            box.add_widget(self.db_user_field)
-            box.add_widget(self.db_pass_field)
+            content_box.add_widget(spacer)
+            content_box.add_widget(self.db_name_field)
+            content_box.add_widget(self.db_user_field)
+            content_box.add_widget(self.db_pass_field)
 
             self.db_dialog = MDDialog(
-                title="Configure Database",
-                type="custom",
-                content_cls=box,
-                size_hint=(0.8, None),  # Same width as other dialogs
-                buttons=[
-                    MDFlatButton(
-                        text="Save",
-                        on_release=self.save_db_config
+                MDDialogHeadlineText(text="Configure Database"),
+                MDDialogSupportingText(text="Enter database info (dbname, username, password)."),
+                MDDialogContentContainer(content_box),  # <-- wrap your box here!
+                MDDialogButtonContainer(
+                    MDButton(
+                        MDButtonText(text="Save"),
+                        style="text",
+                        on_release=self.save_db_config,
                     ),
-                    MDFlatButton(
-                        text="Cancel",
-                        on_release=self.close_db_dialog
+                    MDButton(
+                        MDButtonText(text="Cancel"),
+                        style="text",
+                        on_release=self.close_db_dialog,
                     ),
-                ],
+                ),
             )
+
         self.db_dialog.open()
 
     def save_db_config(self, *args):
