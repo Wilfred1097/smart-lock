@@ -1,6 +1,7 @@
 import os
 from kivy.storage.jsonstore import JsonStore
 from cryptography.fernet import Fernet
+from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 from cryptography.hazmat.primitives import hashes
 import base64
@@ -9,9 +10,6 @@ import base64
 # It's important that this value remains constant once set.
 SALT = b'salt_for_Wilfred1097_20250701'
 
-# A strong, example password to derive the encryption key.
-# In a production app, this should be stored securely and not hardcoded
-# if maximum security is required (e.g., using a system's keyring).
 KEY_PASSWORD = b'Mv!App-s3cr3t-K3y-p@ssw0rd-2025-W1lfr3d'
 
 
@@ -24,11 +22,14 @@ class SecureStorage:
 
     def _generate_key(self):
         """Generates a secure encryption key from a password and salt."""
+        # Explicitly provide the backend for Android compatibility
+        backend = default_backend()
         kdf = PBKDF2HMAC(
             algorithm=hashes.SHA256(),
             length=32,
             salt=SALT,
             iterations=480000,
+            backend=backend,  # This line is the fix
         )
         key = base64.urlsafe_b64encode(kdf.derive(KEY_PASSWORD))
         self.fernet = Fernet(key)
