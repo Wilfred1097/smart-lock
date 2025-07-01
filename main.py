@@ -5,7 +5,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
 from kivy.clock import Clock
-from kivy.core.window import Window
+# from kivy.core.window import Window
 from kivy.lang import Builder
 from kivy.properties import StringProperty
 from kivy.uix.widget import Widget
@@ -388,5 +388,5 @@ class Example(MDApp):
         self.show_alert_dialog("Database settings saved.", "Database Configuration")
 
 
-Window.size = (360, 740)
+# Window.size = (360, 740)
 Example().run()
