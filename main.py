@@ -17,13 +17,14 @@ from kivymd.uix.textfield import MDTextField
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.floatlayout import MDFloatLayout
 
-class Sidebar(BoxLayout):
+class Sidebar(MDBoxLayout):
     def __init__(self, smtp_callback, emails_callback, db_callback, **kwargs):
         super().__init__(**kwargs)
         self.orientation = 'vertical'
         self.size_hint = (None, 1)
         self.width = 200
-        self.x = -200
+        self.x = -self.width  # Start off-screen to the left
+        self.pos_hint = {"top": 1}
         self.padding = [10, 10, 10, 10]
         self.spacing = 1
 
@@ -59,7 +60,6 @@ class Sidebar(BoxLayout):
                 on_release=db_callback,
             )
         )
-
         self.add_widget(Widget(size_hint_y=1))
 
     def _update_bg(self, *args):
@@ -155,19 +155,18 @@ class CenteredSquareButtonPage(MDFloatLayout):
         self.overlay.disabled = True
 
     def show_otp_sent_dialog(self, *args):
-        if not self.dialog:
-            self.dialog = MDDialog(
-                MDDialogHeadlineText(text="Success"),
-                MDDialogSupportingText(text="OTP sent Successfully"),
-                MDDialogButtonContainer(
-                    MDButton(
-                        MDButtonText(text="OK"),
-                        style="text",
-                        on_release=self.close_dialog,
-                    ),
+        dialog = MDDialog(
+            MDDialogHeadlineText(text="Success"),
+            MDDialogSupportingText(text="OTP sent Successfully"),
+            MDDialogButtonContainer(
+                MDButton(
+                    MDButtonText(text="OK"),
+                    style="text",
+                    on_release=lambda x: dialog.dismiss(),
                 ),
-            )
-        self.dialog.open()
+            ),
+        )
+        dialog.open()
 
     def close_dialog(self, *args):
         if self.dialog:
