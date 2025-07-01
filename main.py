@@ -43,10 +43,11 @@ KV = '''
         pos_hint: {"center_x": .5, "center_y": .5}
 
         MDLabel:
-            text: "Send OTP to added Email"
+            text: "Send OTP"
             halign: "center"
             font_style: "Title"
             adaptive_height: True
+            role: "small"
 
         MDButton:
             style: "filled"
@@ -69,6 +70,7 @@ KV = '''
             halign: "center"
             font_style: "Title"
             adaptive_height: True
+            role: "small"
 
         MDTextField:
             id: email_field
@@ -112,6 +114,7 @@ KV = '''
             halign: "center"
             font_style: "Title"
             adaptive_height: True
+            role: "small"
 
         MDTextField:
             id: recipient_email_field
@@ -143,6 +146,7 @@ KV = '''
             halign: "center"
             font_style: "Title"
             adaptive_height: True
+            role: "small"
 
         MDTextField:
             id: server_field
@@ -363,13 +367,13 @@ class Example(MDApp):
         password = screen.ids.password_field.text
         self.storage.set_value('smtp_email', email)
         self.storage.set_value('smtp_password', password, is_encrypted=True)
-        self.show_alert_dialog("SMTP settings saved.")
+        self.show_alert_dialog("SMTP settings saved.", "SMTP Configuration")
 
     def save_recipient_email(self):
         screen = self.root.ids.screen_manager.get_screen('Emails')
         email = screen.ids.recipient_email_field.text
         self.storage.set_value('recipient_email', email)
-        self.show_alert_dialog("Recipient email saved.")
+        self.show_alert_dialog("Recipient email saved.", "Recipient Configuration")
 
     def save_database_settings(self):
         screen = self.root.ids.screen_manager.get_screen('Database')
@@ -381,7 +385,7 @@ class Example(MDApp):
         self.storage.set_value('db_name', dbname)
         self.storage.set_value('db_user', username)
         self.storage.set_value('db_password', password, is_encrypted=True)
-        self.show_alert_dialog("Database settings saved.")
+        self.show_alert_dialog("Database settings saved.", "Database Configuration")
 
 
 Window.size = (360, 740)
