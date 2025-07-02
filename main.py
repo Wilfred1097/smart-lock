@@ -74,6 +74,7 @@ KV = '''
 
         MDTextField:
             id: email_field
+            font_size: "12sp"
             mode: "outlined"
             size_hint_x: .8
             pos_hint: {"center_x": .5}
@@ -84,11 +85,11 @@ KV = '''
 
         MDTextField:
             id: password_field
+            font_size: "12sp"
             mode: "outlined"
             size_hint_x: .8
             pos_hint: {"center_x": .5}
             password: True
-            password_mask: "*"
             MDTextFieldHintText:
                 text: "Password"
             MDTextFieldLeadingIcon:
@@ -118,6 +119,7 @@ KV = '''
 
         MDTextField:
             id: recipient_email_field
+            font_size: "12sp"
             mode: "outlined"
             size_hint_x: .8
             pos_hint: {"center_x": .5}
@@ -150,6 +152,7 @@ KV = '''
 
         MDTextField:
             id: server_field
+            font_size: "12sp"
             mode: "outlined"
             size_hint_x: .9
             pos_hint: {"center_x": .5}
@@ -160,6 +163,7 @@ KV = '''
 
         MDTextField:
             id: dbname_field
+            font_size: "12sp"
             mode: "outlined"
             size_hint_x: .9
             pos_hint: {"center_x": .5}
@@ -170,6 +174,7 @@ KV = '''
 
         MDTextField:
             id: user_field
+            font_size: "12sp"
             mode: "outlined"
             size_hint_x: .9
             pos_hint: {"center_x": .5}
@@ -180,11 +185,11 @@ KV = '''
 
         MDTextField:
             id: db_password_field
+            font_size: "12sp"
             mode: "outlined"
             size_hint_x: .9
             pos_hint: {"center_x": .5}
             password: True
-            password_mask: "*"
             MDTextFieldHintText:
                 text: "Password"
             MDTextFieldLeadingIcon:
@@ -201,6 +206,21 @@ KV = '''
 MDBoxLayout:
     orientation: "vertical"
     md_bg_color: self.theme_cls.backgroundColor
+
+    BoxLayout:
+        size_hint_y: None
+        height: "56dp"
+        padding: "10dp"
+        spacing: "10dp"
+
+        Widget:
+            # spacer to push icon to the right
+            size_hint_x: 1
+
+        MDIconButton:
+            id: theme_toggle_button
+            icon: "weather-sunny" if self.parent.parent.theme_cls.theme_style == "Light" else "weather-night"
+            on_release: app.switch_theme()
 
     MDScreenManager:
         id: screen_manager
@@ -249,10 +269,23 @@ class Example(MDApp):
 
     def build(self):
         self.storage = SecureStorage()
+        self.theme_cls.theme_style_switch_animation = True
+        # Set default theme if needed
+        self.theme_cls.theme_style = "Light"
         return Builder.load_string(KV)
 
     def on_start(self):
         self.load_all_settings()
+
+    def switch_theme(self):
+        if self.theme_cls.theme_style == "Light":
+            self.theme_cls.theme_style = "Dark"
+            # Change icon to moon
+            self.root.ids.theme_toggle_button.icon = "weather-night"
+        else:
+            self.theme_cls.theme_style = "Light"
+            # Change icon to sun
+            self.root.ids.theme_toggle_button.icon = "weather-sunny"
 
     def load_all_settings(self):
         sm_screen = self.root.ids.screen_manager.get_screen('SMTP')
@@ -386,6 +419,12 @@ class Example(MDApp):
         self.storage.set_value('db_user', username)
         self.storage.set_value('db_password', password, is_encrypted=True)
         self.show_alert_dialog("Database settings saved.", "Database Configuration")
+
+    def switch_theme(self):
+        if self.theme_cls.theme_style == "Light":
+            self.theme_cls.theme_style = "Dark"
+        else:
+            self.theme_cls.theme_style = "Light"
 
 
 # Window.size = (360, 740)
